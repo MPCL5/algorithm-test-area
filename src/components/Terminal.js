@@ -1,45 +1,88 @@
 import { getBellsAll } from "api/bell";
 import { useEffect } from "react";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import Terminal, { ColorMode, LineType } from "react-terminal-ui";
 // eslint-disable-next-line no-unused-vars
 import { ErrorText, SuccessText } from "utils/terminal";
+import {
+	BADE_RESPONSE,
+	INVALID_DATA,
+	MISSING_PROPERTY,
+} from "constants/ErrorTypes";
 
 const TerminalUI = () => {
-  const [terminalLineData, setTerminalLineData] = useState([
-    {
-      type: LineType.Output,
-      value: "Welcome to the React Terminal UI Demo!",
-    },
-    { type: LineType.Input, value: "Some previous input received" },
-  ]);
+	let testedItems = useSelector((state) => state.tester.testedItems);
 
-  const handlerNewCommand = (command) => {
-    setTerminalLineData((prev) => [
-      ...prev,
-      {
-        type: LineType.Input,
-        value: command,
-      },
-    ]);
+	const [latestAddedCount, setLatestAddedCount] = useState(0);
+	const [terminalLineData, setTerminalLineData] = useState([
+		...testedItems.map((ti) => ({
+			type: LineType.Output,
+			value:
+				[BADE_RESPONSE, INVALID_DATA, MISSING_PROPERTY].indexOf(
+					ti.type
+				) === -1
+					? SuccessText(`${ti.api} ${ti.message}`)
+					: ErrorText(`${ti.api} ${ti.message}`),
+		})),
+	]);
 
-    // ... do the rest here
-  };
+	useEffect(() => {
+		if (testedItems.length >= latestAddedCount) {
+			const latestList = testedItems.slice(
+				latestAddedCount
+			);
+			setLatestAddedCount(prev => prev + latestList.length);
+			setTerminalLineData((prev) => [
+				...prev,
+				...latestList.map((ti) => ({
+					type: LineType.Output,
+					value:
+						[BADE_RESPONSE, INVALID_DATA, MISSING_PROPERTY].indexOf(
+							ti.type
+						) === -1
+							? SuccessText(`${ti.api} ${ti.message}`)
+							: ErrorText(`${ti.api} ${ti.message}`),
+				})),
+			]);
+		} else {
+			setTerminalLineData([
+				{
+					type: LineType.Output,
+					value: "Enter command",
+				},
+			]);
+			setLatestAddedCount(0);
+		}
+		//eslint-disable-next-line
+	}, [testedItems]);
 
-  useEffect(() => {
-    getBellsAll(undefined, undefined, { test: true });
-  }, []);
+	const handlerNewCommand = (command) => {
+		setTerminalLineData((prev) => [
+			...prev,
+			{
+				type: LineType.Input,
+				value: command,
+			},
+		]);
 
-  return (
-    <div className="container">
-      <Terminal
-        name="React Terminal Usage Example"
-        colorMode={ColorMode.Dark}
-        lineData={terminalLineData}
-        onInput={handlerNewCommand}
-      />
-    </div>
-  );
+		// ... do the rest here
+	};
+
+	useEffect(() => {
+		getBellsAll(undefined, undefined, { test: true });
+	}, []);
+
+	return (
+		<div className="container">
+			<Terminal
+				name="React Terminal Usage Example"
+				colorMode={ColorMode.Dark}
+				lineData={terminalLineData}
+				onInput={handlerNewCommand}
+			/>
+		</div>
+	);
 };
 
 export default TerminalUI;
