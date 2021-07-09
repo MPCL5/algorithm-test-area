@@ -1,3 +1,5 @@
+import { getBellsAll } from "api/bell";
+import { useEffect } from "react";
 import { useState } from "react";
 import Terminal, { ColorMode, LineType } from "react-terminal-ui";
 // eslint-disable-next-line no-unused-vars
@@ -24,11 +26,15 @@ const TerminalUI = () => {
     // ... do the rest here
   };
 
+  useEffect(() => {
+    getBellsAll(undefined, undefined, { test: true });
+  }, []);
+
   return (
     <div className="container">
       <Terminal
         name="React Terminal Usage Example"
-        colorMode={ColorMode.Light}
+        colorMode={ColorMode.Dark}
         lineData={terminalLineData}
         onInput={handlerNewCommand}
       />

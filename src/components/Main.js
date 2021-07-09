@@ -19,7 +19,7 @@ const Main = () => {
         .filter((item) => item.type === SUCCESS)
         .map((item, i) => (
           <div key={i}>
-            Success: {item.message} {i}
+            Success: {item.api} {i}
           </div>
         ))}
       <hr />
@@ -27,7 +27,7 @@ const Main = () => {
         .filter((item) => item.type !== SUCCESS)
         .map((item, i) => (
           <div key={i}>
-            Error: {item.message} {i}
+            Error: {item.api} {i}
           </div>
         ))}
       <button onClick={handleClick}>success</button>

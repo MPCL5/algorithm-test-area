@@ -1,61 +1,86 @@
-import { withAuth as req } from "api/handler";
+import req from "api/handler";
 
 const USERS = "/Users";
 
-export const getUsersAll = function (search, pageSize, page, userType) {
-	return req.get(
-		`${USERS}?search=${search}&PageSize=${pageSize}&Page=${page}&userType=${userType}`
-	);
+export const getUsersAll = function (
+  search,
+  PageSize,
+  Page,
+  userType,
+  config = {}
+) {
+  return req.get(USERS, {
+    params: { search, PageSize, Page, userType },
+    ...config,
+  });
 };
 
-export const getUser = function (id) {
-	return req.get(`${USERS}/${id}`);
+export const getUser = function (id, config = {}) {
+  return req.get(`${USERS}/${id}`, { ...config });
 };
 
-export const updateUser = function (id, lastName, firstName, password, code) {
-	return req.put(`${USERS}/${id}`, { lastName, firstName, password, code });
+export const updateUser = function (
+  id,
+  lastName,
+  firstName,
+  password,
+  code,
+  config = {}
+) {
+  return req.put(
+    `${USERS}/${id}`,
+    { lastName, firstName, password, code },
+    { ...config }
+  );
 };
 
-export const deleteUser = function (id) {
-	return req.delete(`${USERS}/${id}`);
+export const deleteUser = function (id, config = {}) {
+  return req.delete(`${USERS}/${id}`, { ...config });
 };
 
-export const getUserProfile = function () {
-	return req.get(`${USERS}/Profile`);
+export const getUserProfile = function (config = {}) {
+  return req.get(`${USERS}/Profile`, { ...config });
 };
 
-export const postUserProfile = function (firstName, lastName) {
-	return req.post(`${USERS}/Profile`, { firstName, lastName });
+export const postUserProfile = function (firstName, lastName, config = {}) {
+  return req.post(`${USERS}/Profile`, { firstName, lastName }, { ...config });
 };
 
 export const postUserProfileChangePassword = function (
-	currentPassword,
-	newPassword
+  currentPassword,
+  newPassword,
+  config = {}
 ) {
-	return req.post(`${USERS}/Profile/ChangePassword`, {
-		currentPassword,
-		newPassword,
-	});
+  return req.post(
+    `${USERS}/Profile/ChangePassword`,
+    {
+      currentPassword,
+      newPassword,
+    },
+    { ...config }
+  );
 };
 
 export const postUserAdd = function (
-	lastName,
-	firstName,
-	password,
-	code,
-	role
+  lastName,
+  firstName,
+  password,
+  code,
+  role,
+  config = {}
 ) {
-	return req.post(`${USERS}/Add`, {
-		lastName,
-		firstName,
-		password,
-		code,
-		role,
-	});
+  return (
+    req.post(`${USERS}/Add`, {
+      lastName,
+      firstName,
+      password,
+      code,
+      role,
+    }),
+    { ...config }
+  );
 };
 
-export const postUserAddList = function (
-	usersList
-) {
-	return req.post(`${USERS}/Add`, usersList);
+export const postUserAddList = function (usersList, config = {}) {
+  return req.post(`${USERS}/Add`, usersList, { ...config });
 };

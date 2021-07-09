@@ -1,47 +1,50 @@
+import { addBadResError, addSuccess } from "actions";
 import axios from "axios";
-import { store } from "reducers/store";
+import store from "../store";
 
-const BASE_URL = `https://${process.env.REACT_APP_DOMAIN}/api`;
+const BASE_URL = `${process.env.REACT_APP_DOMAIN}/api`;
 
-const withoutAuth = axios.create({
-	baseURL: BASE_URL,
-});
-
-const withAuth = axios.create({
-	baseURL: BASE_URL,
+const axiosIns = axios.create({
+  baseURL: BASE_URL,
 });
 
 // axios event handlers.
 const beforRequest = (config) => {
-	return config;
+  return config;
 };
 
-const afterResponse = (response) => {
-	return response;
+const afterResponse = (res) => {
+  if (res.config.haveError)
+    store.dispatch(addBadResError(formApiName(res.config)));
+  else store.dispatch(addSuccess(formApiName(res.config)));
+
+  return res;
 };
 
 const errorHandler = (error) => {
-	return Promise.reject(error);
+  if (!error.config.haveError)
+    store.dispatch(addBadResError(formApiName(error.config)));
+  else store.dispatch(addSuccess(formApiName(error.config)));
+
+  return Promise.reject(error);
 };
 
-function listener() {
-	const storeValues = store.getState();
-	const {
-		auth: { token },
-	} = storeValues;
+const setApiToken = (token) => {
+  if (!!token) axiosIns.defaults.headers["Authorization"] = `Bearer ${token}`;
+  else delete axiosIns.defaults.headers["Authorization"];
+};
 
-	withAuth.defaults.headers["Authorization"] = `Bearer ${token}`;
-	withAuth.defaults.headers["Access-Control-Allow-Origin"] = "*";
-}
+const setBaseURL = (url) => {
+  axiosIns.defaults.baseURL = url;
+};
+
+const formApiName = (config) => {
+  return `${config.method.toLocaleUpperCase()} - ${config.url}`;
+};
 
 // set the configs.
-withAuth.interceptors.response.use(afterResponse, errorHandler);
-withAuth.interceptors.request.use(beforRequest);
+axiosIns.interceptors.response.use(afterResponse, errorHandler);
+axiosIns.interceptors.request.use(beforRequest);
 
-withoutAuth.interceptors.response.use(afterResponse, errorHandler);
-withoutAuth.interceptors.request.use(beforRequest);
-
-store.subscribe(listener); // attach the listener.
-
-export default withoutAuth;
-export { withAuth, withoutAuth };
+export default axiosIns;
+export { setApiToken, setBaseURL };

@@ -1,4 +1,4 @@
-import {withoutAuth as req} from "api/handler";
+import req from "api/handler";
 
 const AUTH = "/Auth";
 
@@ -7,6 +7,6 @@ const AUTH = "/Auth";
  * @param {string} code code
  * @param {string} password password
  */
-export const login = function (code, password) {
-	return req.post(`${AUTH}/Login`, { code, password });
+export const login = function (code, password, config = {}) {
+  return req.post(`${AUTH}/Login`, { code, password }, { ...config });
 };

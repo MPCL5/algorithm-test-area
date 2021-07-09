@@ -1,43 +1,55 @@
-import { withAuth as req } from "api/handler";
+import req from "api/handler";
 
 const COURSES = "/Courses";
 
-export const getCoursesAll = function (search, unitCount, pageSize, page) {
-	return req.get(
-		`${COURSES}?search=${search}&unitCount=${unitCount}&PageSize=${pageSize}&Page=${page}`
-	);
+export const getCoursesAll = function (
+  search,
+  unitCount,
+  PageSize,
+  Page,
+  config = {}
+) {
+  return req.get(COURSES, {
+    params: { search, unitCount, PageSize, Page },
+    ...config,
+  });
 };
 
-export const postCourse = function (title, unitsCount) {
-	return req.post(`${COURSES}`, { title, unitsCount });
+export const postCourse = function (title, unitsCount, config = {}) {
+  return req.post(`${COURSES}`, { title, unitsCount }, { ...config });
 };
 
-export const getCourse = function (id) {
-	return req.get(`${COURSES}/${id}`);
+export const getCourse = function (id, config = {}) {
+  return req.get(`${COURSES}/${id}`, { ...config });
 };
 
-export const updateCourse = function (id, title, unitsCount) {
-	return req.put(`${COURSES}/${id}`, { title, unitsCount });
+export const updateCourse = function (id, title, unitsCount, config = {}) {
+  return req.put(`${COURSES}/${id}`, { title, unitsCount }, { ...config });
 };
 
-export const deleteCourse = function (id) {
-	return req.delete(`${COURSES}/${id}`);
+export const deleteCourse = function (id, config = {}) {
+  return req.delete(`${COURSES}/${id}`, { ...config });
 };
 
-export const getCourseTimeTablesAll = function (id, pageSize, page) {
-	return req.get(
-		`${COURSES}/${id}/TimeTables?PageSize=${pageSize}&Page=${page}`
-	);
+export const getCourseTimeTablesAll = function (
+  id,
+  PageSize,
+  Page,
+  config = {}
+) {
+  return req.get(`${COURSES}/${id}/TimeTables`, {
+    params: { PageSize, Page },
+    ...config,
+  });
 };
 
-export const getCourseMastersAll = function (id, pageSize, page) {
-	return req.get(
-		`${COURSES}/${id}/Masters?PageSize=${pageSize}&Page=${page}`
-	);
+export const getCourseMastersAll = function (id, PageSize, Page, config = {}) {
+  return req.get(`${COURSES}/${id}/Masters`, {
+    params: { PageSize, Page },
+    ...config,
+  });
 };
 
-export const postCourseChoose = function (id) {
-	return req.post(
-		`${COURSES}/${id}/Choose`
-	);
+export const postCourseChoose = function (id, config = {}) {
+  return req.post(`${COURSES}/${id}/Choose`, {}, { ...config });
 };
