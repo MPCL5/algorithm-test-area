@@ -1,9 +1,10 @@
 import { addBadResError, addSuccess, resetTester } from "actions";
+import { SUCCESS } from "constants/ActionTypes";
 import { useDispatch, useSelector } from "react-redux";
 
 const Main = () => {
   const dispatch = useDispatch();
-  const { tested, error, successes } = useSelector((state) => state.tester);
+  const { testedItems, passed } = useSelector((state) => state.tester);
 
   const handleClick = () => dispatch(addSuccess("GET - User", "done"));
   const handleClickError = () =>
@@ -13,18 +14,22 @@ const Main = () => {
 
   return (
     <div>
-      <div>tested: {tested}</div>
-      {successes.map((item, i) => (
-        <div key={i}>
-          {item.message} {i}
-        </div>
-      ))}
+      <div>passed: {passed}</div>
+      {testedItems
+        .filter((item) => item.type === SUCCESS)
+        .map((item, i) => (
+          <div key={i}>
+            Success: {item.message} {i}
+          </div>
+        ))}
       <hr />
-      {error.map((item, i) => (
-        <div key={i}>
-          {item.message} {i}
-        </div>
-      ))}
+      {testedItems
+        .filter((item) => item.type !== SUCCESS)
+        .map((item, i) => (
+          <div key={i}>
+            Error: {item.message} {i}
+          </div>
+        ))}
       <button onClick={handleClick}>success</button>
       <button onClick={handleClickError}>error</button>
       <button onClick={handleClickRest}>reset</button>

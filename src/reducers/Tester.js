@@ -1,9 +1,8 @@
 import { RESET_TESTER, SUCCESS, ERROR } from "constants/ActionTypes";
 
 const INITIAL_STATE = {
-  tested: 0,
-  error: [],
-  successes: [],
+  passed: 0,
+  testedItems: [],
 };
 
 const TesterReducer = (state = INITIAL_STATE, action) => {
@@ -14,15 +13,14 @@ const TesterReducer = (state = INITIAL_STATE, action) => {
     case SUCCESS:
       return {
         ...state,
-        successes: [...state.successes, { ...action.payload }],
-        tested: state.tested + 1,
+        testedItems: [...state.testedItems, { ...action.payload }],
+        passed: state.passed + 1,
       };
 
     case ERROR:
       return {
         ...state,
-        error: [...state.error, { ...action.payload }],
-        tested: state.tested + 1,
+        testedItems: [...state.testedItems, { ...action.payload }],
       };
 
     default:

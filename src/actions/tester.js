@@ -30,6 +30,6 @@ export const addInvalidData = (api, prop, message = "") => {
 export const addSuccess = (api, message = "") => {
   return {
     type: SUCCESS,
-    payload: { api, message },
+    payload: { type: SUCCESS, api, message },
   };
 };
