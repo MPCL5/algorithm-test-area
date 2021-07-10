@@ -16,6 +16,20 @@ function checkResWithSchema(
     // TODO: add type checking.
     console.log("checked: " + parentProperty + item);
 
+    if (Array.isArray(schema[item])) {
+      if (!Array.isArray(response[item])) {
+        store.dispatch(addMissingPropError(apiName, parentProperty + item));
+        throw new Error("Missing property: " + parentProperty + item);
+      } else if (response[item][0]) console.log("no entities: " + item);
+      else
+        return checkResWithSchema(
+          response[item][0],
+          schema[item][0],
+          apiName,
+          parentProperty + item + "."
+        );
+    }
+
     if (typeof schema[item] === "object")
       return checkResWithSchema(
         response[item],

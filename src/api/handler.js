@@ -3,7 +3,7 @@ import axios from "axios";
 import { formApiName } from "utils/formApiName";
 import store from "../store";
 
-const BASE_URL = `${process.env.REACT_APP_DOMAIN}/api`;
+const BASE_URL = `${process.env.REACT_APP_DOMAIN}`;
 
 const axiosIns = axios.create({
   baseURL: BASE_URL,
