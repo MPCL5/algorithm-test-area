@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Terminal, { ColorMode, LineType } from "react-terminal-ui";
 // eslint-disable-next-line no-unused-vars
-import { ErrorText, SuccessText, WarningText } from "utils/terminal";
+import { DisplayProgress, ErrorText, SuccessText, WarningText } from "utils/terminal";
 import {
   BADE_RESPONSE,
   INVALID_DATA,
@@ -36,10 +36,15 @@ const FIXED_LINES = [
 const TerminalUI = () => {
   const dispatch = useDispatch();
   const testedItems = useSelector((state) => state.tester.testedItems);
-
+  let progress = 0;
   const [latestAddedCount, setLatestAddedCount] = useState(0);
   const [terminalLineData, setTerminalLineData] = useState([
     ...FIXED_LINES,
+    {
+      kid: "progressbar",
+      type: LineType.Output,
+      value: DisplayProgress(progress, 40)
+    },
     ...testedItems.map((ti) => ({
       type: LineType.Output,
       value:
@@ -121,7 +126,26 @@ const TerminalUI = () => {
 
   useEffect(() => {
     // adminScenario();
-  }, []);
+    const pinterval = setInterval(() => {
+      //eslint-disable-next-line
+      progress += 0.01;
+      setTerminalLineData((prev) =>
+        prev.map((l) =>
+          l.kid !== "progressbar"
+              ? l
+              : {
+                      ...l,
+                      value: DisplayProgress(progress, 40),
+                }
+        )
+      );
+    }, 300);
+
+    return () => {
+        clearInterval(pinterval);
+    };
+    //eslint-disable-next-line
+}, []);
 
   return (
     <div className="container">
