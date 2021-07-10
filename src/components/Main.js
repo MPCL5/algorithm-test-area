@@ -1,10 +1,11 @@
 // import { addBadResError, addSuccess, resetTester } from "actions";
 // import { SUCCESS } from "constants/ActionTypes";
+//eslint-disable-next-line
 import { /*  useDispatch, */ useSelector } from "react-redux";
 
 const Main = () => {
   // const dispatch = useDispatch();
-  const { /* testedItems, */ passed } = useSelector((state) => state.tester);
+  // const { /* testedItems, */ passed } = useSelector((state) => state.tester);
 
   /*  const handleClick = () => dispatch(addSuccess("GET - User", "done"));
   const handleClickError = () =>
@@ -14,7 +15,7 @@ const Main = () => {
  */
   return (
     <div>
-      <div>passed: {passed}</div>
+      {/* <div>passed: {passed}</div> */}
       {/* 
       {testedItems
         .filter((item) => item.type === SUCCESS)
