@@ -1,5 +1,6 @@
 import { addBadResError, addSuccess } from "actions";
 import axios from "axios";
+import { formApiName } from "utils/formApiName";
 import store from "../store";
 
 const BASE_URL = `${process.env.REACT_APP_DOMAIN}/api`;
@@ -15,18 +16,20 @@ const beforRequest = (config) => {
 
 const afterResponse = (res) => {
   if (res.config.haveError)
-    store.dispatch(addBadResError(formApiName(res.config)));
-  else store.dispatch(addSuccess(formApiName(res.config)));
+    store.dispatch(addBadResError(formApiName(res.config), res.config.message));
+  // else store.dispatch(addSuccess(formApiName(res.config), res.config.message));
 
   return res;
 };
 
 const errorHandler = (error) => {
-  if (!error.config.haveError)
-    store.dispatch(addBadResError(formApiName(error.config)));
-  else store.dispatch(addSuccess(formApiName(error.config)));
-
-  return Promise.reject(error);
+  if (!error.config.haveError) {
+    store.dispatch(
+      addBadResError(formApiName(error.config), error.config.message)
+    );
+    return Promise.reject(error);
+  } else
+    store.dispatch(addSuccess(formApiName(error.config), error.config.message));
 };
 
 const setApiToken = (token) => {
@@ -36,10 +39,6 @@ const setApiToken = (token) => {
 
 const setBaseURL = (url) => {
   axiosIns.defaults.baseURL = url;
-};
-
-const formApiName = (config) => {
-  return `${config.method.toLocaleUpperCase()} - ${config.url}`;
 };
 
 // set the configs.
