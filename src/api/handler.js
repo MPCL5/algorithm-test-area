@@ -33,7 +33,7 @@ const errorHandler = (error) => {
 };
 
 const setApiToken = (token) => {
-  if (!!token) axiosIns.defaults.headers["Authorization"] = `Bearer ${token}`;
+  if (!!token) axiosIns.defaults.headers["Authorization"] = token;
   else delete axiosIns.defaults.headers["Authorization"];
 };
 

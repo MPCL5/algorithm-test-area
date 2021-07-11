@@ -1,4 +1,4 @@
-import { RESET_TESTER, SUCCESS, ERROR } from "constants/ActionTypes";
+import { RESET_TESTER, SUCCESS, ERROR, SET_TOTAL } from "constants/ActionTypes";
 import {
   BADE_RESPONSE,
   INVALID_DATA,
@@ -7,6 +7,10 @@ import {
 
 export const resetTester = () => {
   return { type: RESET_TESTER };
+};
+
+export const setTotalCount = (count) => {
+  return { type: SET_TOTAL, payload: count };
 };
 
 export const addBadResError = (api, message = "") => {

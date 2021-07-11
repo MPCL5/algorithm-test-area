@@ -41,7 +41,7 @@ function checkResWithSchema(
 }
 
 function propertyCheck(response, swaggerIns, apiName) {
-  if (response.data === undefined) {
+  if (response.data === undefined || response.data === null) {
     store.dispatch(addMissingPropError(apiName, "data"));
     throw new Error("Missing property: data");
   }

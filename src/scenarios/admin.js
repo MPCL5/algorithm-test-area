@@ -7,7 +7,7 @@ import {
   postBell,
   updateBell,
 } from "api/bell";
-import { getDay, getDaysAll, postDay } from "api/day";
+import { deleteDay, getDay, getDaysAll, postDay, updateDay } from "api/day";
 import { setApiToken } from "api/handler";
 import {
   deleteUser,
@@ -373,14 +373,14 @@ export default async function adminScenario() {
     showSuccess(dayDetails, "Details with Id: " + addDayRes.data.data.id);
 
     // update day
-    const updateDayRes = await updateBell(addDayRes.data.data.id, "hollow", 4);
+    const updateDayRes = await updateDay(addDayRes.data.data.id, "hollow", 4);
 
     propertyCheck(
       updateDayRes.data,
       {
         id: 0,
         label: "string",
-        bellOfDay: 0,
+        dayOfWeek: 0,
       },
       formApiName(updateDayRes.config)
     );
@@ -388,7 +388,7 @@ export default async function adminScenario() {
     showSuccess(updateDayRes, "updated with Id: " + addDayRes.data.data.id);
 
     // delete bell
-    const deleteDayRes = await deleteBell(addDayRes.data.data.id);
+    const deleteDayRes = await deleteDay(addDayRes.data.data.id);
 
     showSuccess(deleteDayRes, "deleted with Id: " + addDayRes.data.data.id);
   } catch (e) {

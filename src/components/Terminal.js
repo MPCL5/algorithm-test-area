@@ -19,6 +19,7 @@ import {
 import adminScenario from "scenarios/admin";
 import { resetTester } from "actions";
 import { setBaseURL } from "api/handler";
+import masterScenario from "scenarios/master";
 
 const FIXED_LINES = [
   {
@@ -109,6 +110,7 @@ const TerminalUI = () => {
         break;
 
       case "test_master":
+        masterScenario();
         break;
 
       case "test_studen":

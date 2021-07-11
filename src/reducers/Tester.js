@@ -1,6 +1,7 @@
-import { RESET_TESTER, SUCCESS, ERROR } from "constants/ActionTypes";
+import { RESET_TESTER, SUCCESS, ERROR, SET_TOTAL } from "constants/ActionTypes";
 
 const INITIAL_STATE = {
+  total: 0,
   passed: 0,
   testedItems: [],
 };
@@ -9,6 +10,9 @@ const TesterReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case RESET_TESTER:
       return INITIAL_STATE;
+
+    case SET_TOTAL:
+      return { ...state, total: action.payload };
 
     case SUCCESS:
       return {
