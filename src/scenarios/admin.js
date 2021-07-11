@@ -34,7 +34,7 @@ function showSuccess(res, message = "") {
 export default async function adminScenario() {
   try {
     // Wrong password
-    await login("98888888", "test", {
+    await login(USER_NAME, "wrong", {
       haveError: true,
       message: "Wrong password.",
     });
