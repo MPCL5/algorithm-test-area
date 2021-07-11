@@ -19,7 +19,7 @@ function showSuccess(res, message = "") {
 	store.dispatch(addSuccess(formApiName(res.config), message));
 }
 
-export default async function adminScenario() {
+export default async function studentScenario() {
 	try {
 		// Wrong password
 		await login(USER_NAME, "test", {

@@ -6,170 +6,241 @@ import "./terminal.css";
 
 // eslint-disable-next-line no-unused-vars
 import {
-  DisplayProgress,
-  ErrorText,
-  SuccessText,
-  WarningText,
+	DisplayProgress,
+	ErrorText,
+	SuccessText,
+	WarningText,
 } from "utils/terminal";
 import {
-  BADE_RESPONSE,
-  INVALID_DATA,
-  MISSING_PROPERTY,
+	BADE_RESPONSE,
+	INVALID_DATA,
+	MISSING_PROPERTY,
 } from "constants/ErrorTypes";
 import adminScenario from "scenarios/admin";
 import { resetTester } from "actions";
-import { setBaseURL } from "api/handler";
+import axiosIns, { setBaseURL } from "api/handler";
 import masterScenario from "scenarios/master";
+import studentScenario from "scenarios/student";
+
+const progressbarUnitsCount = 40;
 
 const FIXED_LINES = [
-  {
-    type: LineType.Output,
-    value: "Welcome to final project testing area",
-  },
-  {
-    type: LineType.Output,
-    value: "Developed by: MPCL5 and AmirHeidari",
-  },
-  {
-    type: LineType.Output,
-    value:
-      "Available commands: reset, set_base URL, test_all, test_admin, test_master, test_student",
-  },
-  {
-    type: LineType.Output,
-    value: "Enter command: ",
-  },
+	{
+		type: LineType.Output,
+		value: "Welcome to final project testing area",
+	},
+	{
+		type: LineType.Output,
+		value: "Developed by: MPCL5 and AmirHeidariKhoram",
+	},
+	{
+		type: LineType.Output,
+		value: "Available commands: reset, set_base URL, test_all, test_admin, test_master, test_student",
+	},
+	{
+		type: LineType.Output,
+		value: "Enter command: ",
+	},
 ];
 
 const TerminalUI = () => {
-  const dispatch = useDispatch();
-  const testedItems = useSelector((state) => state.tester.testedItems);
-  const passedItems = useSelector((state) => state.tester.passed);
-  let progress = 0;
-  const [latestAddedCount, setLatestAddedCount] = useState(0);
-  const [terminalLineData, setTerminalLineData] = useState([
-    ...FIXED_LINES,
-    {
-      kid: "progressbar",
-      type: LineType.Output,
-      value: DisplayProgress(progress, 40),
-    },
-    ...testedItems.map((ti) => ({
-      type: LineType.Output,
-      value:
-        [BADE_RESPONSE, INVALID_DATA, MISSING_PROPERTY].indexOf(ti.type) === -1
-          ? SuccessText(`${ti.api} ${ti.message}`)
-          : ErrorText(`${ti.api} ${ti.message}`),
-    })),
-  ]);
+	const dispatch = useDispatch();
+	const [axiosBaseURL, setAxiosBaseURL] = useState(axiosIns.defaults.baseURL);
+	const testedItems = useSelector((state) => state.tester.testedItems);
+	const passedItems = useSelector((state) => state.tester.passed);
+	// const progress = useSelector(state => state.tester.passed / state.tester.total)
+	const [latestProgressId, setlatestProgressId] = useState("");
+	const [latestAddedCount, setLatestAddedCount] = useState(0);
+	const [terminalLineData, setTerminalLineData] = useState([
+		...FIXED_LINES,
+		// {
+		//   kid: "progressbar",
+		//   type: LineType.Output,
+		//   value: DisplayProgress(progress, progressbarUnitsCount),
+		// },
+		...testedItems.map((ti) => ({
+			type: LineType.Output,
+			value:
+				[BADE_RESPONSE, INVALID_DATA, MISSING_PROPERTY].indexOf(
+					ti.type
+				) === -1
+					? SuccessText(`${ti.api} ${ti.message}`)
+					: ErrorText(`${ti.api} ${ti.message}`),
+		})),
+	]);
 
-  useEffect(() => {
-    if (testedItems.length >= latestAddedCount) {
-      const latestList = testedItems.slice(latestAddedCount);
-      setLatestAddedCount((prev) => prev + latestList.length);
-      setTerminalLineData((prev) => [
-        ...prev,
-        ...latestList.map((ti) => ({
-          type: LineType.Output,
-          value:
-            [BADE_RESPONSE, INVALID_DATA, MISSING_PROPERTY].indexOf(ti.type) ===
-            -1
-              ? SuccessText(`${ti.api} ${ti.message}`)
-              : ErrorText(`${ti.api} ${ti.message}`),
-        })),
-      ]);
-    } else {
-      // setTerminalLineData([]);
-      setLatestAddedCount(0);
-    }
-    //eslint-disable-next-line
-  }, [testedItems]);
+	useEffect(() => {
+		if (testedItems.length >= latestAddedCount) {
+			const latestList = testedItems.slice(latestAddedCount);
+			let localPassed = 0;
+			testedItems.forEach((element) => {
+				console.log({ element });
+				if (element.isRequestOk) localPassed += 1;
+			});
+			let localProgress = 0;
+			if (testedItems.length === 0) localProgress = 0;
+			else localProgress = localPassed / testedItems.length;
 
-  const handlerNewCommand = (command) => {
-    setTerminalLineData((prev) => [
-      ...prev,
-      {
-        type: LineType.Input,
-        value: command,
-      },
-    ]);
+			console.log({ localProgress });
+			setLatestAddedCount((prev) => prev + latestList.length);
+			const latestProgressBarData = terminalLineData.find(
+				(item) => item.kid === latestProgressId
+			);
+			setTerminalLineData((prev) => [
+				...prev.filter((prevItem) => prevItem.kid !== latestProgressId),
+				...latestList.map((ti) => ({
+					type: LineType.Output,
+					value:
+						[BADE_RESPONSE, INVALID_DATA, MISSING_PROPERTY].indexOf(
+							ti.type
+						) === -1
+							? SuccessText(`${ti.api} ${ti.message}`)
+							: ErrorText(`${ti.api} ${ti.message}`),
+				})),
+				{
+					...latestProgressBarData,
+					value: DisplayProgress(
+						localProgress,
+						progressbarUnitsCount
+					),
+				},
+			]);
+		} else {
+			// setTerminalLineData([]);
+			setLatestAddedCount(0);
+		}
+		//eslint-disable-next-line
+	}, [testedItems]);
 
-    const args = command.split(" ").slice(1);
-    const newCommand = command.split(" ")[0];
+	// useEffect(() => {
+	//   setTerminalLineData(prev => {
+	//     const newItems = prev.map(line => {
+	//       if (line.kid === latestProgressId)
+	//         return {
+	//           ...line,
+	//           value: DisplayProgress(progress, progressbarUnitsCount)
+	//         }
+	//       else return line
+	//     })
 
-    switch (newCommand) {
-      case "set_base":
-        setBaseURL(args[0]);
-        break;
+	//     return newItems
+	//   })
+	//   //eslint-disable-next-line
+	// }, [progress])
 
-      case "test_all":
-        break;
+	const handlerNewCommand = (command) => {
+		setTerminalLineData((prev) => [
+			...prev,
+			{
+				type: LineType.Input,
+				value: command,
+			},
+		]);
 
-      case "test_admin":
-        adminScenario();
-        break;
+		const args = command.split(" ").slice(1);
+		const newCommand = command.split(" ")[0];
 
-      case "test_master":
-        masterScenario();
-        break;
+		switch (newCommand) {
+			case "set_base":
+				setAxiosBaseURL(args[0]);
+				setBaseURL(args[0]);
+				break;
 
-      case "test_studen":
-        break;
+			case "test_all":
+				break;
 
-      case "reset":
+			case "test_admin":
         setTerminalLineData([...FIXED_LINES]);
-        dispatch(resetTester());
-        setBaseURL(process.env.REACT_APP_DOMAIN);
-        break;
+				dispatch(resetTester());
+				setBaseURL(process.env.REACT_APP_DOMAIN);
+				addProgressbar();
+				adminScenario();
+				break;
 
-      default:
-        setTerminalLineData((perv) => [
-          ...perv,
-          {
-            type: LineType.Output,
-            value: WarningText(`'${newCommand}' is not recognized as command.`),
-          },
-        ]);
-        break;
-    }
-  };
+			case "test_master":
+        setTerminalLineData([...FIXED_LINES]);
+				dispatch(resetTester());
+				setBaseURL(process.env.REACT_APP_DOMAIN);
+				addProgressbar();
+				masterScenario();
+				break;
 
-  useEffect(() => {
-    // adminScenario();
-    const pinterval = setInterval(() => {
-      //eslint-disable-next-line
-      progress += 0.01;
-      setTerminalLineData((prev) =>
-        prev.map((l) =>
-          l.kid !== "progressbar"
-            ? l
-            : {
-                ...l,
-                value: DisplayProgress(progress, 40),
-              }
-        )
-      );
-    }, 300);
+			case "test_student":
+        setTerminalLineData([...FIXED_LINES]);
+				dispatch(resetTester());
+				setBaseURL(process.env.REACT_APP_DOMAIN);
+				addProgressbar();
+				studentScenario();
+				break;
 
-    return () => {
-      clearInterval(pinterval);
-    };
-    //eslint-disable-next-line
-  }, []);
+			case "reset":
+				setTerminalLineData([...FIXED_LINES]);
+				dispatch(resetTester());
+				setBaseURL(process.env.REACT_APP_DOMAIN);
+				break;
 
-  return (
-    <div
-      className="container"
-      style={{ position: "absolute", height: "100vh", width: "100%" }}
-    >
-      <Terminal
-        name={`Passed: ${passedItems}`}
-        colorMode={ColorMode.Dark}
-        lineData={terminalLineData}
-        onInput={handlerNewCommand}
-      />
-    </div>
-  );
+			default:
+				setTerminalLineData((perv) => [
+					...perv,
+					{
+						type: LineType.Output,
+						value: WarningText(
+							`'${newCommand}' is not recognized as command.`
+						),
+					},
+				]);
+				break;
+		}
+	};
+
+	// useEffect(() => {
+	//   // adminScenario();
+	//   const pinterval = setInterval(() => {
+	//     //eslint-disable-next-line
+	//     progress += 0.01;
+	//     setTerminalLineData((prev) =>
+	//       prev.map((l) =>
+	//         l.kid !== "progressbar"
+	//           ? l
+	//           : {
+	//               ...l,
+	//               value: DisplayProgress(progress, progressbarUnitsCount),
+	//             }
+	//       )
+	//     );
+	//   }, 300);
+
+	//   return () => {
+	//     clearInterval(pinterval);
+	//   };
+	//   //eslint-disable-next-line
+	// }, []);
+
+	const addProgressbar = () => {
+		let progressId = String(Date.now());
+		setlatestProgressId(progressId);
+		const progressView = {
+			kid: progressId,
+			type: LineType.Output,
+			value: DisplayProgress(0, progressbarUnitsCount),
+		};
+		setTerminalLineData((prev) => [...prev, progressView]);
+		console.log("addded progress");
+	};
+
+	return (
+		<div
+			className="container"
+			style={{ position: "absolute", height: "100vh", width: "100%" }}
+		>
+			<Terminal
+				name={`Passed: ${passedItems} || Base URL: ${axiosBaseURL}`}
+				colorMode={ColorMode.Dark}
+				lineData={terminalLineData}
+				onInput={handlerNewCommand}
+			/>
+		</div>
+	);
 };
 
 export default TerminalUI;

@@ -17,14 +17,14 @@ const TesterReducer = (state = INITIAL_STATE, action) => {
     case SUCCESS:
       return {
         ...state,
-        testedItems: [...state.testedItems, { ...action.payload }],
+        testedItems: [...state.testedItems, { ...action.payload, isRequestOk: true }],
         passed: state.passed + 1,
       };
 
     case ERROR:
       return {
         ...state,
-        testedItems: [...state.testedItems, { ...action.payload }],
+        testedItems: [...state.testedItems, { ...action.payload, isRequestOk: false }],
       };
 
     default:
