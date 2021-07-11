@@ -20,6 +20,7 @@ import adminScenario from "scenarios/admin";
 import { resetTester } from "actions";
 import { setBaseURL } from "api/handler";
 import masterScenario from "scenarios/master";
+import studentScenario from "scenarios/student";
 
 const FIXED_LINES = [
   {
@@ -58,8 +59,12 @@ const TerminalUI = () => {
       type: LineType.Output,
       value:
         [BADE_RESPONSE, INVALID_DATA, MISSING_PROPERTY].indexOf(ti.type) === -1
-          ? SuccessText(`${ti.api} ${ti.message}`)
-          : ErrorText(`${ti.api} ${ti.message}`),
+          ? SuccessText(`${ti.api} # ${ti.message}`)
+          : ErrorText(
+              `${ti.api} # ${ti.message} ${
+                ti.prop ? "Missing: " + ti.prop : ""
+              }`
+            ),
     })),
   ]);
 
@@ -74,8 +79,12 @@ const TerminalUI = () => {
           value:
             [BADE_RESPONSE, INVALID_DATA, MISSING_PROPERTY].indexOf(ti.type) ===
             -1
-              ? SuccessText(`${ti.api} ${ti.message}`)
-              : ErrorText(`${ti.api} ${ti.message}`),
+              ? SuccessText(`${ti.api} # ${ti.message}`)
+              : ErrorText(
+                  `${ti.api} # ${ti.message} ${
+                    ti.prop ? "# Missing: " + ti.prop : ""
+                  }`
+                ),
         })),
       ]);
     } else {
@@ -113,7 +122,8 @@ const TerminalUI = () => {
         masterScenario();
         break;
 
-      case "test_studen":
+      case "test_student":
+        studentScenario();
         break;
 
       case "reset":
