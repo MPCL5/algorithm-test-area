@@ -1,7 +1,7 @@
 import { addSuccess } from "actions";
 import { login } from "api/auth";
 
-import { deleteTimeTableBell, getTimeTableBellsAll, postTimeTableBells as postTimeTableBell } from "api/timeTableBell";
+import { deleteTimeTableBell, getTimeTableBellsAll } from "api/timeTableBell";
 import { setApiToken } from "api/handler";
 import {
 	getUserProfile,
@@ -13,7 +13,6 @@ import propertyCheck from "utils/propertyTest";
 import store from "../store";
 import { postBell } from "api/bell";
 import { postDay } from "api/day";
-import { getTimeTablesAll } from "api/timeTable";
 
 const USER_NAME = "969601";
 const CURRENT_PASSWORD = "test";
@@ -125,6 +124,14 @@ export default async function masterScenario() {
 		setApiToken(newAuthRes.data.data.token);
 		showSuccess(newAuthRes);
 
+		// change password.
+		const changePasswordTwiceRes = await postUserProfileChangePassword(
+			NEW_PASSWORD,
+			CURRENT_PASSWORD
+		);
+
+		showSuccess(changePasswordTwiceRes);
+
 		// get time table bells
 		const timeTableBellsRes = await getTimeTableBellsAll(10, 1, {
 			message: "Master gets time table bells successfully.",
@@ -155,17 +162,17 @@ export default async function masterScenario() {
 		);
 		showSuccess(timeTableBellsRes);
 
-        // check if list is not empty and try to check delete permission
+		// check if list is not empty and try to check delete permission
 		if (
 			Array.isArray(timeTableBellsRes.data.list) &&
 			timeTableBellsRes.data.list.length
 		) {
-            const timeTableBellId = timeTableBellsRes.data.list[0]
-            // should not be permitted to delete time table bell
-            await deleteTimeTableBell (timeTableBellId, {
-                haveError: true,
-                message: "Master is not permitted to delete time table bell",
-            });
+			const timeTableBellId = timeTableBellsRes.data.list[0];
+			// should not be permitted to delete time table bell
+			await deleteTimeTableBell(timeTableBellId, {
+				haveError: true,
+				message: "Master is not permitted to delete time table bell",
+			});
 		}
 	} catch (e) {
 		// wtf moment :)
