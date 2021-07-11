@@ -1,24 +1,11 @@
 import { addSuccess } from "actions";
 import { login } from "api/auth";
-import {
-	deleteBell,
-	getBell,
-	getBellsAll,
-	postBell,
-	updateBell,
-} from "api/bell";
-import { getDay, getDaysAll, postDay } from "api/day";
 import { setApiToken } from "api/handler";
 import { getTimeTable, getTimeTablesAll } from "api/timeTable";
 import {
-	deleteUser,
-	getUser,
 	getUserProfile,
-	getUsersAll,
-	postUserAdd,
 	postUserProfile,
 	postUserProfileChangePassword,
-	updateUser,
 } from "api/user";
 import { formApiName } from "utils/formApiName";
 import propertyCheck from "utils/propertyTest";
