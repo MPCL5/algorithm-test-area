@@ -91,6 +91,7 @@ export default async function adminScenario() {
 			NEW_PASSWORD
 		);
 		showSuccess(changePasswordRes);
+
 		// new login.
 		const newAuthRes = await login(USER_NAME, NEW_PASSWORD, {
 			message: "Student new auth.",
@@ -113,6 +114,14 @@ export default async function adminScenario() {
 		const studentId = newAuthRes.data.user && newAuthRes.data.user.id;
 		setApiToken(newAuthRes.data.data.token);
 		showSuccess(newAuthRes);
+
+		// change password.
+		const changePasswordTwiceRes = await postUserProfileChangePassword(
+			CURRENT_PASSWORD,
+			NEW_PASSWORD
+		);
+
+		showSuccess(changePasswordTwiceRes);
 
 		if (studentId) {
 			// student should be able to get time table bells
@@ -172,20 +181,17 @@ export default async function adminScenario() {
 				},
 				formApiName(timeTables.config)
 			);
-      showSuccess(timeTables);
+			showSuccess(timeTables);
 			// student should get a single time table information (if there exists any time table)
 			if (
 				Array.isArray(timeTables.data.list) &&
 				timeTables.data.list.length > 0
 			) {
-        const targetTimeTableId = timeTables.data.list[0].id
-				const singleTimeTable = await getTimeTable(
-					targetTimeTableId,
-					{
-						message:
-							"Stundent must be able to get single time table information",
-					}
-				);
+				const targetTimeTableId = timeTables.data.list[0].id;
+				const singleTimeTable = await getTimeTable(targetTimeTableId, {
+					message:
+						"Stundent must be able to get single time table information",
+				});
 				propertyCheck(
 					singleTimeTable.data,
 					{
@@ -224,7 +230,7 @@ export default async function adminScenario() {
 					},
 					formApiName(singleTimeTable.config)
 				);
-        showSuccess(singleTimeTable);
+				showSuccess(singleTimeTable);
 			}
 		}
 	} catch (e) {
