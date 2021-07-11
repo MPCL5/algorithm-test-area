@@ -45,6 +45,7 @@ const FIXED_LINES = [
 
 const TerminalUI = () => {
 	const dispatch = useDispatch();
+  const [testCount, setTestCount] = useState(0);
 	const [axiosBaseURL, setAxiosBaseURL] = useState(axiosIns.defaults.baseURL);
 	const testedItems = useSelector((state) => state.tester.testedItems);
 	const passedItems = useSelector((state) => state.tester.passed);
@@ -79,7 +80,7 @@ const TerminalUI = () => {
 			});
 			let localProgress = 0;
 			if (testedItems.length === 0) localProgress = 0;
-			else localProgress = localPassed / testedItems.length;
+			else localProgress = localPassed / testCount;
 
 			console.log({ localProgress });
 			setLatestAddedCount((prev) => prev + latestList.length);
@@ -147,9 +148,17 @@ const TerminalUI = () => {
 				break;
 
 			case "test_all":
+        setTestCount(40)
+        setTerminalLineData([...FIXED_LINES]);
+				dispatch(resetTester());
+				setBaseURL(process.env.REACT_APP_DOMAIN);
+        adminScenario()
+        masterScenario()
+        studentScenario()
 				break;
 
 			case "test_admin":
+        setTestCount(22)
         setTerminalLineData([...FIXED_LINES]);
 				dispatch(resetTester());
 				setBaseURL(process.env.REACT_APP_DOMAIN);
@@ -158,6 +167,7 @@ const TerminalUI = () => {
 				break;
 
 			case "test_master":
+        setTestCount(9)
         setTerminalLineData([...FIXED_LINES]);
 				dispatch(resetTester());
 				setBaseURL(process.env.REACT_APP_DOMAIN);
@@ -166,6 +176,7 @@ const TerminalUI = () => {
 				break;
 
 			case "test_student":
+        setTestCount(9)
         setTerminalLineData([...FIXED_LINES]);
 				dispatch(resetTester());
 				setBaseURL(process.env.REACT_APP_DOMAIN);
