@@ -126,8 +126,8 @@ export default async function masterScenario() {
 
 		// change password.
 		const changePasswordTwiceRes = await postUserProfileChangePassword(
-			CURRENT_PASSWORD,
-			NEW_PASSWORD
+			NEW_PASSWORD,
+			CURRENT_PASSWORD
 		);
 
 		showSuccess(changePasswordTwiceRes);
