@@ -23,8 +23,8 @@ import { formApiName } from "utils/formApiName";
 import propertyCheck from "utils/propertyTest";
 import store from "../store";
 
-const USER_NAME = "975361004";
-const CURRENT_PASSWORD = "testTwo";
+const USER_NAME = "979701";
+const CURRENT_PASSWORD = "test";
 const NEW_PASSWORD = "testTwo";
 
 function showSuccess(res, message = "") {
@@ -130,6 +130,14 @@ export default async function adminScenario() {
     setApiToken(newAuthRes.data.data.token);
 
     showSuccess(newAuthRes);
+
+    // change password.
+    const changePasswordTwiceRes = await postUserProfileChangePassword(
+      NEW_PASSWORD,
+      CURRENT_PASSWORD
+    );
+
+    showSuccess(changePasswordTwiceRes);
 
     // user list.
     const userListRes = await getUsersAll("", 10, 1, undefined);

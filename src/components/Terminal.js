@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Terminal, { ColorMode, LineType } from "react-terminal-ui";
+import "./terminal.css";
+
 // eslint-disable-next-line no-unused-vars
 import {
   DisplayProgress,
@@ -156,7 +158,7 @@ const TerminalUI = () => {
   return (
     <div
       className="container"
-      style={{ position: "absolute", height: "100%", width: "100%" }}
+      style={{ position: "absolute", height: "100vh", width: "100%" }}
     >
       <Terminal
         name={`Passed: ${passedItems}`}
