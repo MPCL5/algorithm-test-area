@@ -9,9 +9,23 @@ import {
 } from "api/bell";
 import { getDay, getDaysAll, postDay } from "api/day";
 import { setApiToken } from "api/handler";
+import {
+  deleteUser,
+  getUser,
+  getUserProfile,
+  getUsersAll,
+  postUserAdd,
+  postUserProfile,
+  postUserProfileChangePassword,
+  updateUser,
+} from "api/user";
 import { formApiName } from "utils/formApiName";
 import propertyCheck from "utils/propertyTest";
 import store from "../store";
+
+const USER_NAME = "975361004";
+const CURRENT_PASSWORD = "testTwo";
+const NEW_PASSWORD = "testTwo";
 
 function showSuccess(res, message = "") {
   store.dispatch(addSuccess(formApiName(res.config), message));
@@ -26,7 +40,7 @@ export default async function adminScenario() {
     });
 
     // right password.
-    const authRes = await login("975361004", "test", {
+    const authRes = await login(USER_NAME, CURRENT_PASSWORD, {
       message: "Admin auth.",
     });
 
@@ -49,6 +63,172 @@ export default async function adminScenario() {
     setApiToken(authRes.data.data.token);
 
     showSuccess(authRes);
+
+    // show profile.
+    const userProfileRes = await getUserProfile();
+
+    propertyCheck(
+      userProfileRes.data,
+      {
+        id: 0,
+        lastName: "string",
+        firstName: "string",
+        code: "string",
+        role: "string",
+      },
+      formApiName(userProfileRes.config)
+    );
+
+    showSuccess(userProfileRes);
+
+    // update profile.
+    const updateProfileRes = await postUserProfile("test", "changedByTest");
+
+    propertyCheck(
+      updateProfileRes.data,
+      {
+        id: 0,
+        lastName: "string",
+        firstName: "string",
+        code: "string",
+        role: "string",
+      },
+      formApiName(updateProfileRes.config)
+    );
+
+    showSuccess(updateProfileRes);
+
+    // change password.
+    const changePasswordRes = await postUserProfileChangePassword(
+      CURRENT_PASSWORD,
+      NEW_PASSWORD
+    );
+
+    showSuccess(changePasswordRes);
+
+    // new login.
+    const newAuthRes = await login(USER_NAME, NEW_PASSWORD, {
+      message: "Admin new auth.",
+    });
+
+    propertyCheck(
+      newAuthRes.data,
+      {
+        token: "string",
+        expireAt: "2021-07-10T05:21:18.776Z",
+        user: {
+          id: 0,
+          lastName: "string",
+          firstName: "string",
+          code: "string",
+          role: "string",
+        },
+      },
+      formApiName(newAuthRes.config)
+    );
+
+    setApiToken(newAuthRes.data.data.token);
+
+    showSuccess(newAuthRes);
+
+    // user list.
+    const userListRes = await getUsersAll("", 10, 1, undefined);
+
+    propertyCheck(
+      userListRes.data,
+      {
+        list: [
+          {
+            id: 0,
+            lastName: "string",
+            firstName: "string",
+            code: "string",
+            role: "string",
+          },
+        ],
+        count: 0,
+        page: 0,
+        totalPages: 0,
+      },
+      formApiName(userListRes.config)
+    );
+
+    showSuccess(userListRes);
+
+    // Add user.
+    const addUserRes = await postUserAdd(
+      "poorghaffar",
+      "Masoud",
+      "test",
+      "9797" + Math.floor(Math.random() * 1000),
+      "master"
+    );
+
+    propertyCheck(
+      addUserRes.data,
+      {
+        id: 0,
+        lastName: "string",
+        firstName: "string",
+        code: "string",
+        role: "string",
+      },
+      formApiName(addUserRes.config)
+    );
+
+    showSuccess(addUserRes);
+
+    // user details.
+    const userDetailsRes = await getUser(addUserRes.data.data.id);
+
+    propertyCheck(
+      userDetailsRes.data,
+      {
+        id: 0,
+        lastName: "string",
+        firstName: "string",
+        code: "string",
+        role: "string",
+      },
+      formApiName(userDetailsRes.config)
+    );
+
+    showSuccess(
+      userDetailsRes,
+      "Details with Id: " + userDetailsRes.data.data.id
+    );
+
+    // update user
+    const updateUserRes = await updateUser(
+      userDetailsRes.data.data.id,
+      "lool",
+      "lulz"
+    );
+
+    propertyCheck(
+      updateUserRes.data,
+      {
+        id: 0,
+        lastName: "string",
+        firstName: "string",
+        code: "string",
+        role: "string",
+      },
+      formApiName(updateUserRes.config)
+    );
+
+    showSuccess(
+      userDetailsRes,
+      "Updated with Id: " + updateUserRes.data.data.id
+    );
+
+    // delete user.
+    const deleteUserRes = await deleteUser(updateUserRes.data.data.id);
+
+    showSuccess(
+      deleteUserRes,
+      "Details with Id: " + updateUserRes.data.data.id
+    );
 
     // Add bell.
     const addBellRes = await postBell("test", 10);

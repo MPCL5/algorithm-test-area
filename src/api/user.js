@@ -69,14 +69,15 @@ export const postUserAdd = function (
   role,
   config = {}
 ) {
-  return (
-    req.post(`${USERS}/Add`, {
+  return req.post(
+    `${USERS}/Add`,
+    {
       lastName,
       firstName,
       password,
       code,
       role,
-    }),
+    },
     { ...config }
   );
 };
